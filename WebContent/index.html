@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ERPai</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<style type="text/css">
+	body{
+		background-size: 100%;
+		background-image: url('pc.jpg');
+		background-repeat: no-repeat;
+	}
+</style>
+</head>
+<body>
+	
+	
+	
+	<div class="modal fade" id="modalCliente" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLabel">Cadastro de Clientes</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+				Nome:
+				<input type="text" class="form-control"  id="nome"/> <br/>
+				Endereço:
+				<input type="text" class="form-control"  id="endereco"/> <br/>
+				Bairro:
+				<input type="text" class="form-control"  id="bairro"/> <br/>
+				Celular:
+				<input type="text" class="form-control"  id="telefone" placeholder="Celular com DDD e 9 na frente" onkeypress="mascaraTel( this, event )"/> <br/>
+				Cidade:
+				<select class="form-control" id="cidade">
+				</select> 
+				<br/>
+								
+			</div>
+		    <div class="modal-footer">
+		        <button type="button"  onclick="salvarCliente()" class="btn btn-success">Salvar</button>
+		        <button type="button" onclick="cancelarCliente()" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+		    </div>
+		  </div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="modalExcluirCliente" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLabel">Excluir Cliente</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+				<h3>Confirma a exclusão?</h3>	
+			</div>
+		    <div class="modal-footer">
+		        <button type="button"  onclick="excluirsimCliente()" class="btn btn-success">Sim</button>
+		        <button type="button" class="btn btn-danger" data-dismiss="modal">Não</button>
+		    </div>
+		  </div>
+		</div>
+	</div>
+	
+<div class="modal" id="modalExcluirProduto" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Excluir Produto</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3>Confirma a exclusão?</h3>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="excluirsimProduto()" class="btn btn-success">Sim</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Não</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="modalProduto" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" style="color: green">Cadastro de Produtos</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="formulario" style="color: red">
+				Produto:
+		       <input style="width: 70%" type="text" class="form-control" id="descricao" name="descricao">
+		    
+	  			Preço:
+		       <input type="text" class="form-control" placeholder="R$" id="preco" name="preco" style="width: 30%">
+		    
+	  			Grupo:
+				<select class="form-control" id="grupo" style="width: 50%">
+				</select> 
+				
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="salvarProduto()" class="btn btn-success">Salvar</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<br/>
+
+	<div class="modal fade" id="modalVenda" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLabel">Vendas</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	      		Data:
+				<input type="text" class="form-control" id="data" placeholder="Digite somente números" onkeypress="mascaraData( this, event )"/> <br/>
+				Cliente:
+				<select class="form-control" id="pessoa">
+				</select>  <br/>
+				Produto:
+				<select class="form-control" onchange="unitario()" id="produto">
+				</select>  <br/>
+				Valor Unitário:
+				<input type="text" class="form-control"  id="valorUnitario"/> <br/>
+				Quantidade:
+				<input type="text" class="form-control" onchange="total()" id="quantidade"/> <br/>
+				Valor Total:
+				<input type="text" class="form-control" id="valorTotal"/> <br/>
+								
+			</div>
+		    <div class="modal-footer">
+		        <button type="button"  onclick="salvarVenda()" class="btn btn-success">Salvar</button>
+		        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+		    </div>
+		  </div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="modalExcluirVenda" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLabel">Excluir Venda</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+				<h3>Confirma a exclusão?</h3>	
+			</div>
+		    <div class="modal-footer">
+		        <button type="button"  onclick="excluirsimVenda()" class="btn btn-success">Sim</button>
+		        <button type="button" class="btn btn-danger" data-dismiss="modal">Não</button>
+		    </div>
+		  </div>
+		</div>
+	</div>
+	
+	<h2 style="position: absolute; left: 60%">Mini ERPai</h2>
+	<div style="height: 60px;"></div>
+	<div style="text-align: center">
+		<nav class="navbar navbar-expand-sm navbar-dark bg-primary" style="width: 40%; margin-left: 30%">
+		  <a class="navbar-brand">Menu</a>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+		    <span class="navbar-toggler-icon"></span>
+		  </button>
+		  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+		    <ul class="navbar-nav">
+		      <li class="nav-item dropdown" style="margin-left: 20%">
+		        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		          Relatórios
+		        </a>
+		        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+			        <button type="button" class="btn btn-primary" onclick="listarRelatorioCid()"  style="width: 180px">Por cidades</button>
+					<div class="dropdown-divider"></div>
+					<button type="button" class="btn btn-primary" onclick="listarRelatorioGrp()"  style="width: 180px">Por grupos de produto</button>
+		        </div>
+		      </li>
+		      <li class="nav-item dropdown" style="margin-left: 20%">
+		        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		          Cadastrar
+		        </a>
+		        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="color:blue;">
+			        <button type="button" class="btn btn-primary" onclick="novoProduto()" style="width: 150px">Produto</button>
+					<div class="dropdown-divider"></div>
+					<button type="button" class="btn btn-primary" onclick="novoCliente()"  style="width: 150px">Cliente</button>
+					<div class="dropdown-divider"></div>
+					<button type="button" class="btn btn-primary" onclick="novaVenda()"  style="width: 150px">Venda</button>
+		        </div>
+		      </li>
+		      <li class="nav-item dropdown" style="margin-left: 20%">
+		        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		          Listar
+		        </a>
+		        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="color:blue;">
+			        <button type="button" class="btn btn-primary" onclick="listarProduto()" style="width: 150px">Produtos</button>
+					<div class="dropdown-divider"></div>
+					<button type="button" class="btn btn-primary" onclick="listarCliente()"  style="width: 150px">Clientes</button>
+					<div class="dropdown-divider"></div>
+					<button type="button" class="btn btn-primary" onclick="listarVenda()"  style="width: 150px">Vendas</button>
+				</div>
+		      </li>
+		    </ul>
+		  </div>
+		</nav>
+	 </div><br/>
+	 <div id="resposta" style="text-align: center; color: white"></div>
+	 <br/>
+	
+	<script type="text/javascript">
+	
+	function listarRelatorioCid() {
+		document.getElementById("resposta").innerHTML = "aguarde, carregando...";
+		
+	
+		var oReq = new XMLHttpRequest();
+		oReq.onload = function(e) {
+		  var dados = oReq.response; // not responseText
+		  
+			var tab = "<div class='table-responsive' id='tableRelatorioCid' style='width: 70%; margin-left: 15%;'>"  
+		    tab += "<table border='1px' class='table table-striped table-sm'>";
+			tab += "<th scope='col' style='color: white'>Cidade</th>";
+			tab += "<th scope='col' style='color: white'>TotalVendido</th>";
+			
+			
+			for (var i in dados) {
+				console.log(i);
+				console.log(dados[i]);
+				tab += "<tr>";
+				tab += "<td class='bg-info'>" + dados[i].cidade + "</td>";
+				tab += "<td class='bg-info'>" + dados[i].totalVendido + "</td>";
+				tab += "</tr>";
+			}
+			
+			tab += "</table>";
+			tab += "</div>";	
+			document.getElementById("resposta").innerHTML = tab;
+			
+		  
+		}
+		oReq.open("POST", "Controller?m=ListarRelatorioCid");
+		oReq.responseType = "json";
+		oReq.send();
+	}
+	
+		
+	function listarRelatorioGrp() {
+		document.getElementById("resposta").innerHTML = "aguarde, carregando...";
+		
+	
+		var oReq = new XMLHttpRequest();
+		oReq.onload = function(e) {
+		  var dados = oReq.response; // not responseText
+		  
+			var tab = "<div class='table-responsive' id='tableRelatorioGrp' style='width: 70%; margin-left: 15%;'>"  
+		    tab += "<table border='1px' class='table table-striped table-sm'>";
+			tab += "<th scope='col' style='color: white'>Grupo</th>";
+			tab += "<th scope='col' style='color: white'>TotalVendido</th>";
+			
+			
+			for (var i in dados) {
+				console.log(i);
+				console.log(dados[i]);
+				tab += "<tr>";
+				tab += "<td class='bg-info'>" + dados[i].grupo + "</td>";
+				tab += "<td class='bg-info'>" + dados[i].valorTotal + "</td>";
+				tab += "</tr>";
+			}
+			
+			tab += "</table>";
+			tab += "</div>";	
+			document.getElementById("resposta").innerHTML = tab;
+			
+		  
+		}
+		oReq.open("POST", "Controller?m=ListarRelatorioGrp");
+		oReq.responseType = "json";
+		oReq.send();
+	}
+	
+		
+	function mascaraData( campo, e )
+	{
+		var kC = (document.all) ? event.keyCode : e.keyCode;
+		var data = campo.value;
+		
+		if( kC!=8 && kC!=46 )
+		{
+			if( data.length==2 )
+			{
+				campo.value = data += '/';
+			}
+			else if( data.length==5 )
+			{
+				campo.value = data += '/';
+			}
+			else
+				campo.value = data;
+		}
+	}
+	
+	function mascaraTel( campo, e )
+	{
+		var kC = (document.all) ? event.keyCode : e.keyCode;
+		var tel = campo.value;
+		
+		if( kC!=8 && kC!=46 )
+		{
+			if(tel.length==0)
+			{
+				campo.value = tel += '(';
+			}
+			else if(tel.length==3)
+			{
+				campo.value = tel += ')';
+			}
+			else if( tel.length==9 )
+			{
+				campo.value = tel += '-';
+			}
+			else
+				campo.value = tel;
+		}
+	}
+	
+	// AQUI COMEÇAM AS FUNÇÕES RELACIONADAS ÀS VENDAS
+	
+	var idVendaAtual = 0;
+	
+	function novaVenda() {
+		idVendaAtual = 0;
+		$('#modalVenda').modal('show');
+		
+		document.getElementById("data").value = "";
+		document.getElementById("pessoa").value = "";
+		document.getElementById("produto").value = "";
+		document.getElementById("valorUnitario").value = "";
+		document.getElementById("quantidade").value = "";
+		document.getElementById("valorTotal").value = "";
+		//document.getElementById("formulario").style.display = "block";
+		
+		
+	}
+	
+		
+	function total() {
+		
+		var verif = document.getElementById("valorTotal").value;
+		var i = 0;
+		
+		if (verif != undefined) {
+			document.getElementById("valorTotal").value = i;
+			var unit = document.getElementById("valorUnitario").value;
+			var qtd = document.getElementById("quantidade").value;
+			var total = unit * qtd;
+			document.getElementById("valorTotal").value = total;
+		}
+		else {
+			var unit = document.getElementById("valorUnitario").value;
+			console.log(unit);
+			var qtd = document.getElementById("quantidade").value;
+			var total = unit * qtd;
+			document.getElementById("valorTotal").value = total;
+		}
+		
+	}
+		
+	function salvarVenda() {
+		document.getElementById("resposta").innerHTML = "aguarde, carregando...";
+		
+		unit = document.getElementById("valorUnitario").value;
+		qtd = document.getElementById("quantidade").value;
+		total = unit * qtd;
+		
+		//faz chamada ao servidor
+		var req = new XMLHttpRequest();
+		req.onload = function(e) {
+		  var dados = req.response;
+		  alert(dados);
+		  listarVenda();
+		  $('#modalVenda').modal('hide');
+		}
+		//envia dados pelo método POST
+		var c = document.getElementById("pessoa");
+		var idcliente = c.options[c.selectedIndex].value;
+		
+		var p = document.getElementById("produto");
+		var idproduto = p.options[p.selectedIndex].value;
+		
+					
+		req.open("POST", "Controller?m=SalvarVendas", true);
+		req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		req.send("idvenda="+idVendaAtual+
+				"&pessoa="+idcliente+
+				"&produto="+idproduto+
+				"&data="+document.getElementById("data").value+
+				"&quantidade="+document.getElementById("quantidade").value+
+				"&valorUnitario="+document.getElementById("valorUnitario").value+
+				"&valorTotal="+total);	
+		
+	}
+
+	function listarClientes() {
+		document.getElementById("pessoa").innerHTML = "<option selected>carregando..</option>";
+		var oReq = new XMLHttpRequest();
+		oReq.onload = function(e) {
+			var dados = oReq.response;
+			var itens = "";
+			for (var i in dados) {
+				itens += "<option value='"+dados[i].idpessoa+"'>";
+				itens += dados[i].nome + "</option>";
+			}
+			document.getElementById("pessoa").innerHTML = itens;
+		}
+		oReq.open("POST", "Controller?m=ListarPessoas");
+		oReq.responseType = "json";
+		oReq.send();
+	}
+	
+	function listarProdutos() {
+		document.getElementById("produto").innerHTML = "<option selected>carregando..</option>";
+		var oReq = new XMLHttpRequest();
+		oReq.onload = function(e) {
+			var dados = oReq.response;
+			var itens = "";
+			for (var i in dados) {
+				itens += "<option value='"+dados[i].idproduto+"'>";
+				itens += dados[i].descricao + "</option>";
+			}
+			document.getElementById("produto").innerHTML = itens;
+		}
+		oReq.open("POST", "Controller?m=ListarProdutos");
+		oReq.responseType = "json";
+		oReq.send();
+	}
+	
+	function unitario() {
+		var prod = document.getElementById("produto");
+		var produto = prod.options[prod.selectedIndex].value;
+		
+		var oReq = new XMLHttpRequest();
+		oReq.onload = function(e) {
+			var dados = oReq.response;
+			var item = 0;
+			for (var i in dados) {
+				console.log(dados[i].descricao);
+				console.log(produto);
+				if (dados[i].idproduto == produto) {
+					item = dados[i].preco;
+				}
+			}
+			document.getElementById("valorUnitario").value = item;
+		}
+		oReq.open("POST", "Controller?m=ListarProdutos");
+		oReq.responseType = "json";
+		oReq.send();	
+		
+	}
+	
+	function listarVenda() {
+		document.getElementById("resposta").innerHTML = "aguarde, carregando...";
+		
+	
+		var oReq = new XMLHttpRequest();
+		oReq.onload = function(e) {
+		  var dados = oReq.response; // not responseText
+		  
+			var tab = "<div class='table-responsive' id='tablevenda' style='width: 70%; margin-left: 15%;'>"  
+		    tab += "<table border='1px' class='table table-striped table-sm'>";
+			tab += "<th scope='col' style='color: white'>id</th>";
+			tab += "<th scope='col' style='color: white'>Data</th>";
+			tab += "<th scope='col' style='color: white'>Cliente</th>";
+			tab += "<th scope='col' style='color: white'>Produto</th>";
+			tab += "<th scope='col' style='color: white'>Valor Unitário</th>";
+			tab += "<th scope='col' style='color: white'>Quantidade</th>";
+			tab += "<th scope='col' style='color: white'>Valor Total</th>";
+			
+			for (var i in dados) {
+				console.log(i);
+				console.log(dados[i]);
+				tab += "<tr>";
+				tab += "<td class='bg-info'>" + dados[i].idvenda + "</td>";
+				tab += "<td class='bg-info'>" + dados[i].data + "</td>";
+				if (dados[i].pessoa != undefined) {
+					tab += "<td class='bg-info'>" + dados[i].pessoa.nome+ "</td>";	
+				} else {
+					tab += "<td class='bg-info'></td>";
+				}
+				if (dados[i].produto != undefined) {
+					tab += "<td class='bg-info'>" + dados[i].produto.descricao+ "</td>";	
+				} else {
+					tab += "<td class='bg-info'></td>";
+				}
+				tab += "<td class='bg-info'>" + dados[i].valorUnitario + "</td>";
+				tab += "<td class='bg-info'>" + dados[i].quantidade + "</td>";
+				tab += "<td class='bg-info'>" + dados[i].valorTotal + "</td>";
+				tab += "</tr>";
+			}
+			
+				tab += "</table>";
+				tab += "</div>";	
+				document.getElementById("resposta").innerHTML = tab;
+				
+			  
+			}
+			oReq.open("POST", "Controller?m=ListarVendas");
+			oReq.responseType = "json";
+			oReq.send();
+	}
+		
+	
+	listarClientes();
+	listarProdutos();
+	
+	
+	
+	function excluirVenda(idvenda) {
+		idVendaAtual = idvenda;
+		$("#modalExcluirVenda").modal('show');
+	}
+	function excluirsimVenda() {
+		
+		
+		var req = new XMLHttpRequest();
+		req.onload = function(e) {
+		  var dados = req.response;
+		  alert(dados);
+		  listarVenda();
+		  $('#modalExcluirVenda').modal('hide');
+		}
+		//envia dados pelo método POST
+		req.open("POST", "Controller?m=ExcluirVenda", true);
+		req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		req.send("idvenda="+idVendaAtual);
+		
+		
+	}
+	function alterarVenda(idvenda) {
+		idVendaAtual = idvenda;
+		
+		var req = new XMLHttpRequest();
+		req.onload = function(e) {
+		  var dados = req.response;
+		  
+		  if (dados.pessoa!=undefined) {
+			  	document.getElementById("pessoa").value = dados.pessoa.idpessoa;
+			  }
+		  if (dados.produto!=undefined) {
+			  	document.getElementById("produto").value = dados.produto.idproduto;
+			  }
+		  document.getElementById("data").value = dados.data;
+		  document.getElementById("quantidade").value = dados.quantidade;
+		  document.getElementById("valorUnitario").value = dados.valorUnitario;
+		  document.getElementById("valorTotal").value = dados.valorTotal;
+		  
+		  //document.getElementById("formulario").style.display = "block";
+		  $('#modalVenda').modal('show');
+					  
+		}
+		//envia dados pelo método POST
+		req.open("POST", "Controller?m=ConsultarVenda", true);
+		req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		req.responseType = "json";
+		req.send("idvenda="+idVendaAtual);
+	}
+
+		
+	// AQUI COMEÇAM AS FUNÇÕES RELACIONADAS AOS CLIENTES
+		var idPessoaAtual = 0;
+	
+		function novoCliente() {
+			idPessoaAtual = 0;
+			$('#modalCliente').modal('show');
+			
+			document.getElementById("nome").value = "";
+			document.getElementById("endereco").value = "";
+			document.getElementById("bairro").value = "";
+			document.getElementById("telefone").value = "";
+			document.getElementById("cidade").value = "";
+			//document.getElementById("formulario").style.display = "block";
+			
+			
+		}
+		function cancelarCliente() {
+			//document.getElementById("formulario").style.display = "none";
+			$('#modalCliente').modal('hide');
+		}
+		function salvarCliente() {
+			document.getElementById("resposta").innerHTML = "aguarde, carregando...";
+			
+			//faz chamada ao servidor
+			var req = new XMLHttpRequest();
+			req.onload = function(e) {
+			  var dados = req.response;
+			  alert(dados);
+			  listarCliente();
+			  $('#modalCliente').modal('hide');
+			}
+			//envia dados pelo método POST
+			var e = document.getElementById("cidade");
+			var idcidade = e.options[e.selectedIndex].value;
+			
+						
+			req.open("POST", "Controller?m=SalvarPessoa", true);
+			req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			req.send("idpessoa="+idPessoaAtual+
+					"&nome="+document.getElementById("nome").value+
+					"&endereco="+document.getElementById("endereco").value+
+					"&bairro="+document.getElementById("bairro").value+
+					"&telefone="+document.getElementById("telefone").value+
+					"&cidade="+idcidade);	
+			
+		}
+	
+		function listarCidades() {
+			document.getElementById("cidade").innerHTML = "<option selected>carregando..</option>";
+			var oReq = new XMLHttpRequest();
+			oReq.onload = function(e) {
+				var dados = oReq.response;
+				var itens = "";
+				for (var i in dados) {
+					itens += "<option value='"+dados[i].idcidade+"'>";
+					itens += dados[i].cidade + "</option>";
+				}
+				document.getElementById("cidade").innerHTML = itens;
+			}
+			oReq.open("POST", "Controller?m=ListarCidades");
+			oReq.responseType = "json";
+			oReq.send();
+		}
+		
+		function listarCliente() {
+			document.getElementById("resposta").innerHTML = "aguarde, carregando...";
+			
+		
+			var oReq = new XMLHttpRequest();
+			oReq.onload = function(e) {
+			  var dados = oReq.response; // not responseText
+			  
+				var tab = "<div class='table-responsive' id='tablecliente' style='width: 70%; margin-left: 15%;'>"  
+			    tab += "<table border='1px' class='table table-striped table-sm'>";
+				tab += "<th scope='col' style='color: white'>id</th>";
+				tab += "<th scope='col' style='color: white'>Nome</th>";
+				tab += "<th scope='col' style='color: white'>Endereço</th>";
+				tab += "<th scope='col' style='color: white'>Bairro</th>";
+				tab += "<th scope='col' style='color: white'>Telefone</th>";
+				tab += "<th scope='col' style='color: white'>Cidade</th>";
+				tab += "<th scope='col' style='color: white'>Alterar / Excluir</th>";
+				
+				for (var i in dados) {
+					console.log(i);
+					console.log(dados[i]);
+					tab += "<tr>";
+					tab += "<td class='bg-info'>" + dados[i].idpessoa + "</td>";
+					tab += "<td class='bg-info'>" + dados[i].nome + "</td>";
+					tab += "<td class='bg-info'>" + dados[i].endereco + "</td>";
+					tab += "<td class='bg-info'>" + dados[i].bairro + "</td>";
+					tab += "<td class='bg-info'>" + dados[i].telefone + "</td>";
+					if (dados[i].cidade!=undefined) {
+						tab += "<td class='bg-info'>" + dados[i].cidade.cidade + "/" + dados[i].cidade.estado + "</td>";	
+					} else {
+						tab += "<td class='bg-info'></td>";
+					}
+					tab += "<td class='bg-info'>";
+					tab += "<div class='row' style='width:80%; margin-left:20%'>";
+					tab += "<div class='col-50'>";
+					tab += '<input type="button" class="btn btn-success" onclick="alterarCliente('+dados[i].idpessoa+')" value="A"/>';
+					tab += "</div>";
+					tab += "<div class='col-50' style='margin-left: 5px'>";
+					tab += '<input type="button" class="btn btn-danger" onclick="excluirCliente('+dados[i].idpessoa+')" value="X"/>';
+					tab += "</div>";
+					tab += "</div>";
+					tab += "</td>";
+					tab += "</tr>";
+				}
+				
+				tab += "</table>";
+				tab += "</div>";	
+				document.getElementById("resposta").innerHTML = tab;
+				
+			  
+			}
+			oReq.open("POST", "Controller?m=ListarPessoas");
+			oReq.responseType = "json";
+			oReq.send();
+		}
+		
+		
+		listarCidades();
+				
+		
+		function excluirCliente(idpessoa) {
+			idPessoaAtual = idpessoa;
+			$("#modalExcluirCliente").modal('show');
+		}
+		function excluirsimCliente() {
+			
+			
+			var req = new XMLHttpRequest();
+			req.onload = function(e) {
+			  var dados = req.response;
+			  alert(dados);
+			  listarCliente();
+			  $('#modalExcluirCliente').modal('hide');
+			}
+			//envia dados pelo método POST
+			req.open("POST", "Controller?m=ExcluirPessoa", true);
+			req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			req.send("idpessoa="+idPessoaAtual);
+			
+			
+		}
+		function alterarCliente(idpessoa) {
+			idPessoaAtual = idpessoa;
+			
+			var req = new XMLHttpRequest();
+			req.onload = function(e) {
+			  var dados = req.response;
+			  
+			  document.getElementById("nome").value = dados.nome;
+			  document.getElementById("endereco").value = dados.endereco;
+			  document.getElementById("bairro").value = dados.bairro;
+			  document.getElementById("telefone").value = dados.telefone;
+			  if (dados.cidade!=undefined) {
+			  	document.getElementById("cidade").value = dados.cidade.idcidade;
+			  }
+			  //document.getElementById("formulario").style.display = "block";
+			  $('#modalCliente').modal('show');
+						  
+			}
+			//envia dados pelo método POST
+			req.open("POST", "Controller?m=ConsultarPessoa", true);
+			req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			req.responseType = "json";
+			req.send("idpessoa="+idPessoaAtual);
+		}
+		
+	// AQUI COMEÇAM AS FUNÇÕES RELACIONADAS AOS PRODUTOS
+	var idProdutoAtual = 0;
+	
+		function novoProduto() {
+			idProdutoAtual = 0;
+			
+			$("#modalProduto").modal('show');
+			document.getElementById("descricao").value = "";
+			document.getElementById("preco").value = "";
+			document.getElementById("grupo").value = "";
+			
+			
+		}
+		
+		function salvarProduto() {
+			
+			document.getElementById("resposta").innerHTML = "aguarde, carregando...";
+			
+			//faz chamada ao servidor
+			var req = new XMLHttpRequest();
+			req.onload = function(e) {
+			  var dados = req.response;
+			  alert(dados);
+			  listarProduto();
+			  $("#modalProduto").modal('hide');
+			  
+			}
+			
+			//pegar seleção do select
+			var g = document.getElementById("grupo");
+			var idgrupo = g.options[g.selectedIndex].value;
+			
+			//envia dados pelo método POST
+			req.open("POST", "Controller?m=InsereProduto", true);
+			req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			req.send("idproduto="+idProdutoAtual+
+					"&descricao="+document.getElementById("descricao").value+
+					"&preco="+document.getElementById("preco").value+
+					"&grupo="+idgrupo);
+				
+			
+		}
+		
+		function listarGrupos() {
+			document.getElementById("grupo").innerHTML = "<option selected>carregando..</option>";
+			var oReq = new XMLHttpRequest();
+			oReq.onload = function(e) {
+				var dados = oReq.response;
+				var itens = "";
+				for (var i in dados) {
+					itens += "<option value='"+dados[i].idgrupo+"'>";
+					itens += dados[i].grupo + "</option>";
+				}
+				document.getElementById("grupo").innerHTML = itens;
+			}
+			oReq.open("POST", "Controller?m=ListarGrupos");
+			oReq.responseType = "json";
+			oReq.send();
+		}
+	
+		function alterarProduto(idProduto){
+			idProdutoAtual = idProduto;
+			
+			var req = new XMLHttpRequest();
+			req.onload = function(e) {
+			  var dados = req.response;
+			  
+			  document.getElementById("descricao").value = dados.descricao;
+			  document.getElementById("preco").value = dados.preco;
+			  if (dados.grupo!=undefined) {
+				  	document.getElementById("grupo").value = dados.grupo.idgrupo;
+			  }
+			  $("#modalProduto").modal('show');
+			  
+			}
+			req.open("POST", "Controller?m=ConsultarProduto", true);
+			req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			req.responseType = "json";
+			req.send("idproduto="+idProdutoAtual);
+		}
+		function excluirProduto(idProduto){
+			idProdutoAtual = idProduto;
+			$("#modalExcluirProduto").modal('show');
+		}
+		function excluirsimProduto(){
+			
+			var req = new XMLHttpRequest();
+			req.onload = function(e) {
+			  var dados = req.response;
+			  alert(dados);
+			  listarProduto();
+			  $("#modalExcluirProduto").modal('hide');
+			}
+			//envia dados pelo método POST
+			req.open("POST", "Controller?m=ExcluirProduto", true);
+			req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			req.send("idproduto="+idProdutoAtual);
+			
+		}
+		function listarProduto() {
+			document.getElementById("resposta").innerHTML = "aguarde, carregando...";
+			
+		
+			var oReq = new XMLHttpRequest();
+			oReq.onload = function(e) {
+			  var dados = oReq.response; // not responseText
+			  
+				var tab = "<div class='table-responsive' id='tableproduto' style='width: 50%; margin-left: 25%;'>"  
+			    tab += "<table border='1px' class='table table-striped table-sm'>";
+				tab += "<th scope='col' style='color: white'>id</th>";
+				tab += "<th scope='col' style='color: white'>Descrição</th>";
+				tab += "<th scope='col' style='color: white'>Preço</th>";
+				tab += "<th scope='col' style='color: white'>Grupo</th>";
+				tab += "<th scope='col' style='color: white'>Alterar / Excluir</th>";
+				
+				for (var i in dados) {
+					console.log(i);
+					console.log(dados[i]);
+					tab += "<tr>";
+					tab += "<td class='bg-info'>" + dados[i].idproduto + "</td>";
+					tab += "<td class='bg-info'>" + dados[i].descricao + "</td>";
+					tab += "<td class='bg-info'>" + dados[i].preco + "</td>";
+					if (dados[i].grupo!=undefined) {
+						tab += "<td class='bg-info'>" + dados[i].grupo.grupo + "</td>";	
+					} else {
+						tab += "<td class='bg-info'></td>";
+					}
+					tab += "<td class='bg-info'>";
+					tab += "<div class='row' style='width:70%; margin-left:15%'>";
+					tab += "<div class='col-50' style='margin-left: 25px'>";
+					tab += '<input type="button" class="btn btn-success" onclick="alterarProduto('+dados[i].idproduto+')" value="A"/>';
+					tab += "</div>";
+					tab += "<div class='col-50' style='margin-left: 40px'>";
+					tab += '<input type="button" class="btn btn-danger" onclick="excluirProduto('+dados[i].idproduto+')" value="X"/>';
+					tab += "</div>";
+					tab += "</div>";
+					tab += "</td>";
+					tab += "</tr>";
+				}
+				
+				tab += "</table>";
+				tab += "</div>";	
+				document.getElementById("resposta").innerHTML = tab;
+				
+			  
+			}
+			oReq.open("POST", "Controller?m=ListarProdutos");
+			oReq.responseType = "json";
+			oReq.send();
+		}
+		
+		listarGrupos();
+	
+		
+		
+	</script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	
+</body>
+</html>
